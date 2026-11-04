@@ -83,8 +83,7 @@ Light-Story/
 │   ├── src/components/           # Reusable UI components (Tailwind CSS v4, Lucide)
 │   └── ARCHITECTURE.md           # Frontend architecture documentation
 ├── packages/
-│   ├── api-types/                # OpenAPI 3.0 spec & auto-generated TypeScript contracts
-│   └── mcp-lightstory/           # MCP server tooling (internal)
+│   └── api-types/                # OpenAPI 3.0 spec & auto-generated TypeScript contracts
 ├── workers/
 │   └── kv-worker/                # Unified API Gateway (JWT auth, CORS, routing) — the only Worker
 ├── backend-supabase/             # Database layer & Supabase migrations

@@ -12,7 +12,7 @@ vi.mock('../http', () => ({
   fetchApi: vi.fn(),
   messageFromResponse: vi.fn(async (res: Response) => {
     try {
-      const data: any = await res.json();
+      const data = (await res.json()) as { error?: string };
       return data.error || 'Server error';
     } catch {
       return res.statusText || 'Server error';
@@ -34,13 +34,13 @@ describe('ads.actions', () => {
           error: null,
         }),
       },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
   });
 
   describe('updateAdConfig', () => {
     it('calls fetchApi and revalidates site_settings and ad_slots tags on success', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateAdConfig({ key: 'public_ads_enabled', value: true });
       expect(res.success).toBe(true);
@@ -60,7 +60,7 @@ describe('ads.actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const res = await updateAdConfig({ key: 'public_ads_enabled', value: true });
       expect(res.success).toBe(false);
@@ -77,7 +77,7 @@ describe('ads.actions', () => {
 
     it('handles backend error response', async () => {
       const mockRes = new Response(JSON.stringify({ error: 'Permission denied' }), { status: 403 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateAdConfig({ key: 'public_ads_enabled', value: false });
       expect(res.success).toBe(false);
@@ -88,7 +88,7 @@ describe('ads.actions', () => {
   describe('updateSiteSetting', () => {
     it('calls updateAdConfig and revalidates tags', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateSiteSetting({ key: 'ad_header', value: '<div>ad</div>' });
       expect(res.success).toBe(true);
@@ -104,7 +104,7 @@ describe('ads.actions', () => {
   describe('updateAdSlot', () => {
     it('calls fetchApi with slot and code and revalidates tags on success', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateAdSlot({ slot: 'ad_header', code: '<script>banner</script>' });
       expect(res.success).toBe(true);
@@ -126,7 +126,7 @@ describe('ads.actions', () => {
   describe('toggleAdSlot', () => {
     it('toggles global ad state when slot is omitted', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await toggleAdSlot({ enabled: false });
       expect(res.success).toBe(true);
@@ -140,7 +140,7 @@ describe('ads.actions', () => {
 
     it('toggles specified slot when slot is provided', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await toggleAdSlot({ slot: 'ad_sidebar', enabled: true });
       expect(res.success).toBe(true);

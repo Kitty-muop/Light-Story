@@ -72,25 +72,27 @@ if (typeof window !== 'undefined' && (!window.localStorage || typeof window.loca
 }
 
 // Test setup: rewrite requests targeting http://api to http://localhost:3001
-const globalAny = globalThis as any;
-const originalFetch = globalAny.fetch;
+const globalScope = globalThis as unknown as { fetch?: typeof fetch };
+const originalFetch = globalScope.fetch;
 
 if (typeof originalFetch === 'function') {
-  globalAny.fetch = async (input: RequestInfo, init?: RequestInit) => {
+  globalScope.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     try {
       let url: string;
       if (typeof input === 'string') url = input;
+      else if (input instanceof URL) url = input.toString();
       else url = (input as Request).url;
 
       if (url.startsWith('http://api/')) {
         const newUrl = url.replace('http://api', 'http://localhost:3001');
         if (typeof input === 'string') input = newUrl;
+        else if (input instanceof URL) input = new URL(newUrl);
         else input = new Request(newUrl, input as RequestInit);
       }
     } catch {
       // ignore and proceed to original fetch
     }
 
-    return originalFetch.call(globalAny, input, init as any);
-  };
+    return originalFetch.call(globalThis, input, init);
+  }) as typeof fetch;
 }

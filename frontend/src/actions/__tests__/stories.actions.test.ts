@@ -7,7 +7,7 @@ vi.mock('../http', () => ({
   fetchApi: vi.fn(),
   messageFromResponse: vi.fn(async (res: Response) => {
     try {
-      const data: any = await res.json();
+      const data = (await res.json()) as { error?: string };
       return data.error || 'Server error';
     } catch {
       return res.statusText || 'Server error';
@@ -26,7 +26,7 @@ describe('stories.actions - incrementStoryView', () => {
 
   it('increments view count successfully with string storyId input', async () => {
     const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
     const result = await incrementStoryView('story-123');
 
@@ -40,7 +40,7 @@ describe('stories.actions - incrementStoryView', () => {
 
   it('increments view count successfully with object input { storyId }', async () => {
     const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
     const result = await incrementStoryView({ storyId: 'story-456' });
 
@@ -57,14 +57,14 @@ describe('stories.actions - incrementStoryView', () => {
     expect(resEmpty.success).toBe(false);
     expect(resEmpty.error).toContain('Invalid input');
 
-    const resNull = await incrementStoryView(null as any);
+    const resNull = await incrementStoryView(null as unknown as string);
     expect(resNull.success).toBe(false);
     expect(resNull.error).toContain('Invalid input');
   });
 
   it('handles backend API error response', async () => {
     const mockRes = new Response(JSON.stringify({ error: 'Story not found' }), { status: 404 });
-    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+    vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
     const result = await incrementStoryView('non-existent-id');
 

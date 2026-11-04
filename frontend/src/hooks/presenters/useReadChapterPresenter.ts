@@ -109,9 +109,17 @@ export function useReadChapterPresenter(initialData?: ReaderInitialData | null) 
   useEffect(() => {
     try {
       const mode = localStorage.getItem('reader:readingMode');
-      if (mode && ['webtoon', 'single', 'double'].includes(mode)) setReadingMode(mode as any);
       const b = localStorage.getItem('reader:brightness');
-      if (b && !isNaN(Number(b))) setBrightness(Number(b));
+      if ((mode && ['webtoon', 'single', 'double'].includes(mode)) || (b && !isNaN(Number(b)))) {
+        queueMicrotask(() => {
+          if (mode && ['webtoon', 'single', 'double'].includes(mode)) {
+            setReadingMode(mode as 'webtoon' | 'single' | 'double');
+          }
+          if (b && !isNaN(Number(b))) {
+            setBrightness(Number(b));
+          }
+        });
+      }
     } catch {}
   }, []);
 
@@ -151,14 +159,14 @@ export function useReadChapterPresenter(initialData?: ReaderInitialData | null) 
     // the server failed entirely (no initialData) to preserve client recovery.
     if (initialData) return;
 
-    setLoading(true);
+    queueMicrotask(() => setLoading(true));
     const fetchReadingData = async () => {
       try {
         const [comicData, chaptersData] = await Promise.all([
           fetchStoryById(comicId).catch(() => null),
           fetchChaptersByStoryId(comicId).catch(() => []),
         ]);
-        if (comicData) setComic(comicData as any);
+        if (comicData) setComic(comicData as unknown as Comic);
 
         const sortedChapters = (chaptersData || []).sort((a, b) => {
           if (a.chapter_number && b.chapter_number)
@@ -172,13 +180,13 @@ export function useReadChapterPresenter(initialData?: ReaderInitialData | null) 
 
         let currentData: Chapter | null = null;
         try {
-          const currentRes = await apiClient.get<any>(
+          const currentRes = await apiClient.get<Chapter | { chapter: Chapter } | Chapter[]>(
             `/api/comics/${comicId}/chapters/${chapterId}`,
           ).catch(() => null);
           if (currentRes) {
             currentData = Array.isArray(currentRes)
               ? currentRes[0]
-              : currentRes?.chapter || currentRes;
+              : (currentRes as { chapter?: Chapter })?.chapter || (currentRes as Chapter);
           }
         } catch {}
 
@@ -244,7 +252,7 @@ export function useReadChapterPresenter(initialData?: ReaderInitialData | null) 
         chapterNumber: currentChapter.chapter_number || 1,
       });
     }
-  }, [comicId, chapterId, currentChapter?.id]);
+  }, [comicId, chapterId, currentChapter]);
 
   // CBZ chapters can't be unpacked server-side (blob URLs); unpack on the client
   // only when SSR flagged requiresCbzUnpack, without refetching anything.
@@ -269,7 +277,7 @@ export function useReadChapterPresenter(initialData?: ReaderInitialData | null) 
         toast.error("Không thể giải nén file .cbz của chương truyện.");
       }
     })();
-  }, [currentChapter?.id, initialData]);
+  }, [currentChapter, images.length, initialData]);
 
   useEffect(() => {
     autoAdvanceRef.current = autoAdvance;

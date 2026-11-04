@@ -18,6 +18,19 @@ describe('getClientIP', () => {
     });
     // Spoofing XFF to a loopback address must not reach the loopback bypass.
     expect(getClientIP(r)).not.toBe('127.0.0.1');
+    expect(getClientIP(r)).toBe('proxy:127.0.0.1');
+  });
+
+  it('isolates clients behind non-Cloudflare proxies using x-forwarded-for or x-real-ip', () => {
+    const rXff = new Request('https://gateway.test/api/comics', {
+      headers: { 'x-forwarded-for': '192.168.1.50, 10.0.0.1' },
+    });
+    expect(getClientIP(rXff)).toBe('proxy:192.168.1.50');
+
+    const rReal = new Request('https://gateway.test/api/comics', {
+      headers: { 'x-real-ip': '10.0.0.25' },
+    });
+    expect(getClientIP(rReal)).toBe('proxy:10.0.0.25');
   });
 
   it('does not default to a bypassed address when no Cloudflare header is present', async () => {

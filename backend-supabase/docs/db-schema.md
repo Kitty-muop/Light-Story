@@ -22,7 +22,7 @@ Canonical reference for all Supabase PostgreSQL tables, relationships, RLS polic
 | `email` | `text` | UNIQUE NOT NULL |
 | `full_name` | `text` | |
 | `avatar_url` | `text` | |
-| `role` | `text` | NOT NULL DEFAULT 'user' CHECK (`superadmin`, `admin`, `employee`, `user`) |
+| `role` | `text` | NOT NULL DEFAULT 'user' CHECK (`superadmin`, `admin`, `employee`, `user`, `haunt`) |
 | `created_at` | `timestamptz` | NOT NULL DEFAULT now() |
 | `updated_at` | `timestamptz` | NOT NULL DEFAULT now() |
 

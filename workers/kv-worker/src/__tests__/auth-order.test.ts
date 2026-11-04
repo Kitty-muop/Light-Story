@@ -60,4 +60,32 @@ describe('validateJWT ordering', () => {
     await expect(validateJWT(forgedToken(sub), env)).rejects.toBeInstanceOf(UnauthorizedError);
     expect((globalThis as any)[`__PROFILE_ROLE_${sub}__`]).toBeUndefined();
   });
+
+  it('tolerates up to 60s of clock skew on expiration and not-before', async () => {
+    const createToken = (claims: Record<string, unknown>) => {
+      const b64 = (o: unknown) =>
+        btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const header = b64({ alg: 'RS256', typ: 'JWT', kid: 'nope' });
+      const payload = b64({
+        sub: 'sub-1',
+        role: 'authenticated',
+        ...claims,
+      });
+      return `${header}.${payload}.AAAA`;
+    };
+
+    const now = Math.floor(Date.now() / 1000);
+
+    // Expired by 75s (> 60s tolerance): throws Token expired immediately
+    await expect(validateJWT(createToken({ exp: now - 75 }), env)).rejects.toThrow('Token expired');
+
+    // Not valid until 75s in the future (> 60s tolerance): throws Token not yet valid
+    await expect(validateJWT(createToken({ nbf: now + 75 }), env)).rejects.toThrow('Token not yet valid');
+
+    // Expired by 15s (within 60s tolerance): passes exp check and reaches signature verification
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ keys: [] }), { status: 200 })));
+    await expect(validateJWT(createToken({ exp: now - 15 }), env)).rejects.toBeInstanceOf(UnauthorizedError);
+    // Not "Token expired", but signature error
+    await expect(validateJWT(createToken({ exp: now - 15 }), env)).rejects.not.toThrow('Token expired');
+  });
 });

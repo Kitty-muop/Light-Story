@@ -141,6 +141,8 @@ async function verifyJwtSignature(token: string, jwk: any): Promise<boolean> {
   );
 }
 
+export const CLOCK_SKEW_SEC = 60;
+
 export async function validateJWT(
   token: string,
   env?: any,
@@ -155,9 +157,9 @@ export async function validateJWT(
   }
 
   const now = Math.floor(Date.now() / 1000);
-  if (payload.exp && now >= payload.exp)
+  if (payload.exp && now >= payload.exp + CLOCK_SKEW_SEC)
     throw new UnauthorizedError("Token expired");
-  if (payload.nbf && now < payload.nbf)
+  if (payload.nbf && now < payload.nbf - CLOCK_SKEW_SEC)
     throw new UnauthorizedError("Token not yet valid");
 
   const userId = payload.sub ?? payload.user_id ?? payload.uid;

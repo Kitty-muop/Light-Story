@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "next dev -p 3001 -H 0.0.0.0",
     "dev:clean": "node -e \"require('fs').rmSync('.next-dev',{recursive:true,force:true})\" && next dev -p 3002 -H 0.0.0.0",
-    "dev:rescue": "node scripts/dev-rescue.mjs && next dev -p 3001 -H 0.0.0.0",
     "build": "next build",
     "start": "next start -p 3001 -H 0.0.0.0",
     "preview": "next start -p 3001 -H 0.0.0.0",
-    "lint": "eslint . --max-warnings 141",
+    "lint": "eslint . --max-warnings 45",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
@@ -21,9 +20,7 @@
     "test:e2e:ui": "playwright test --ui",
     "ci:verify": "npm run lint && npm run build && npm run test:run",
     "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "env:add-service-key": "node ./scripts/add_service_key.mjs",
-    "env:use-emulator": "node ./scripts/use_emulator.mjs"
+    "supabase:stop": "supabase stop"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1100.0",

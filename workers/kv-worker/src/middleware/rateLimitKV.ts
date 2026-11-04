@@ -26,9 +26,23 @@ export type RateLimitResult = {
 
 export function getClientIP(request: Request): string {
   // cf-connecting-ip is set by Cloudflare and cannot be spoofed by the client.
-  // x-forwarded-for can be, and a fallback chain ending at '127.0.0.1' hands
-  // every caller the loopback bypass below for the cost of one header.
-  return request.headers.get('cf-connecting-ip') || 'unknown';
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp;
+
+  // When behind a non-Cloudflare proxy (e.g. local Docker/nginx), use X-Forwarded-For or X-Real-IP
+  // prefixed to prevent spoofing the loopback bypass ('127.0.0.1' or '::1').
+  const xff = request.headers.get('x-forwarded-for');
+  if (xff) {
+    const first = xff.split(',')[0].trim();
+    if (first) return `proxy:${first}`;
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return `proxy:${realIp.trim()}`;
+  }
+
+  return 'unknown';
 }
 
 function getLimit(role: string | null | undefined, isAuthOrAdmin: boolean, pathname?: string): number {

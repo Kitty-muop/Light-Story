@@ -32,7 +32,7 @@ describe('bookmarks.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ bookmarked: true }), { status: 200 })
@@ -65,7 +65,7 @@ describe('bookmarks.actions server actions', () => {
             data: { session: null },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ message: 'Unauthorized' }), { status: 401 })
@@ -88,7 +88,7 @@ describe('bookmarks.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ bookmarked: false }), { status: 200 })
@@ -123,7 +123,7 @@ describe('bookmarks.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ bookmarked: true }), { status: 200 })
@@ -148,7 +148,7 @@ describe('bookmarks.actions server actions', () => {
             data: { session: null },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ error: 'Server error' }), { status: 500 })

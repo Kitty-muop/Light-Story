@@ -47,7 +47,7 @@ export function useComicDetailPresenter({
         ]);
 
         if (comicData) {
-          setComic(comicData as any);
+          setComic(comicData as unknown as Comic);
         }
 
         const sortedChapters = (chaptersData || []).sort(
@@ -85,7 +85,8 @@ export function useComicDetailPresenter({
     e.currentTarget.src = "https://placehold.co/400x600/png?text=No+Cover";
   };
 
-  const rawCover = (comic as any)?.coverUrl || (comic as any)?.cover_url || "";
+  const comicCoverData = comic as (Comic & { coverUrl?: string; cover_url?: string }) | null;
+  const rawCover = comicCoverData?.coverUrl || comicCoverData?.cover_url || "";
   const coverUrl = rawCover
     ? proxiedR2ImageUrl(rawCover)
     : "https://placehold.co/400x600/png?text=No+Cover";

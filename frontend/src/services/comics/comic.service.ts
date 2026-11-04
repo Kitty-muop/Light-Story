@@ -221,7 +221,7 @@ export async function getRecommendations(comicId: string, limit = 6): Promise<Co
     const res = await apiClient.get<ComicContext[]>(ROUTES.API.COMICS_RECOMMENDATIONS(comicId, limit));
     return Array.isArray(res) ? res : [];
   } catch {
-    const fallback = await apiClient.get<any>(ROUTES.API.COMICS_MOST_VIEWED(limit)).catch(() => []);
+    const fallback = await apiClient.get<ComicContext[] | { items?: ComicContext[]; comics?: ComicContext[] }>(ROUTES.API.COMICS_MOST_VIEWED(limit)).catch(() => []);
     return Array.isArray(fallback) ? fallback : fallback?.items || fallback?.comics || [];
   }
 }

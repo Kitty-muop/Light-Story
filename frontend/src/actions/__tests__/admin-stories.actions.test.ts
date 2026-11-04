@@ -20,7 +20,7 @@ vi.mock('../http', () => ({
   fetchApi: vi.fn(),
   messageFromResponse: vi.fn(async (res: Response) => {
     try {
-      const data: any = await res.json();
+      const data = (await res.json()) as { error?: string };
       return data.error || 'Server error';
     } catch {
       return res.statusText || 'Server error';
@@ -42,13 +42,13 @@ describe('admin-stories.actions', () => {
           error: null,
         }),
       },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
   });
 
   describe('updateStoryStatus', () => {
     it('updates status successfully and revalidates tags', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await updateStoryStatus({ id: 'story-1', status: 'published' });
 
@@ -69,7 +69,7 @@ describe('admin-stories.actions', () => {
 
     it('returns error message when fetchApi returns non-ok response', async () => {
       const mockRes = new Response(JSON.stringify({ error: 'Permission denied' }), { status: 403 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await updateStoryStatus({ id: 'story-1', status: 'archived' });
 
@@ -81,7 +81,7 @@ describe('admin-stories.actions', () => {
   describe('featureStory', () => {
     it('features story successfully with default isFeatured', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await featureStory({ id: 'story-1' });
 
@@ -96,7 +96,7 @@ describe('admin-stories.actions', () => {
 
     it('unfeatures story successfully when isFeatured is false', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await featureStory({ id: 'story-1', isFeatured: false });
 
@@ -111,7 +111,7 @@ describe('admin-stories.actions', () => {
   describe('deleteStoryAdmin', () => {
     it('deletes story as admin successfully and revalidates tags', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await deleteStoryAdmin({ id: 'story-99' });
 
@@ -128,7 +128,7 @@ describe('admin-stories.actions', () => {
   describe('updateStory', () => {
     it('updates story title, description, status successfully', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await updateStory({
         id: 'story-1',
@@ -154,7 +154,7 @@ describe('admin-stories.actions', () => {
   describe('deleteStory', () => {
     it('deletes story successfully', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await deleteStory({ id: 'story-1' });
 
@@ -169,7 +169,7 @@ describe('admin-stories.actions', () => {
   describe('bulkUpdateStatus', () => {
     it('bulk updates story statuses successfully', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await bulkUpdateStatus({ ids: ['s1', 's2'], status: 'ongoing' });
 
@@ -198,7 +198,7 @@ describe('admin-stories.actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const result = await updateStoryStatus({ id: 'story-1', status: 'published' });
       expect(result.success).toBe(false);
@@ -209,7 +209,7 @@ describe('admin-stories.actions', () => {
 
     it('bulk deletes stories successfully', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const result = await bulkDeleteStories({ ids: ['s1', 's2'] });
 

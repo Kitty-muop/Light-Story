@@ -40,7 +40,7 @@ export function useHomePagePresenter(
         setCategories(cats);
 
         const { items: trendingData } = await fetchStoriesPage({ page: 1, pageSize: 6, sort: "most_viewed" });
-        setTrendingComics(trendingData as any);
+        setTrendingComics(trendingData as unknown as Comic[]);
       } catch (error) {
         console.error("Lỗi tải dữ liệu khởi tạo:", error);
       } finally {
@@ -62,10 +62,11 @@ export function useHomePagePresenter(
         );
         if (cancelled) return;
         const merged = details
-          .filter(Boolean)
-          .map((d: any) => {
-            const h = history.find((item) => item.comicId === d?.id);
-            return { ...d, chapterNumber: h?.chapterNumber, chapterId: h?.chapterId };
+          .filter((d): d is NonNullable<typeof d> => Boolean(d))
+          .map((d) => {
+            const story = d as unknown as { id?: string };
+            const h = history.find((item) => item.comicId === story?.id);
+            return { ...(d as unknown as Comic), chapterNumber: h?.chapterNumber, chapterId: h?.chapterId };
           })
           .slice(0, 8);
         setHistoryComics(merged);
@@ -90,15 +91,15 @@ export function useHomePagePresenter(
 
         if (!isMounted) return;
 
-        setComics(comicsData as any);
+        setComics(comicsData as unknown as Comic[]);
         setLoading(false);
 
         if (comicsData.length > 0) {
           try {
-            const comicIds = comicsData.map((c: any) => c.id).join(",");
-            let chapters: any[] = [];
+            const comicIds = comicsData.map((c) => (c as { id: string }).id).join(",");
+            let chapters: Chapter[] = [];
             try {
-              const batchRes = await apiClient.get<any>(`/api/comics/chapters/batch?comicIds=${comicIds}`);
+              const batchRes = await apiClient.get<Chapter[] | { chapters?: Chapter[] }>(`/api/comics/chapters/batch?comicIds=${comicIds}`);
               chapters = Array.isArray(batchRes) ? batchRes : batchRes?.chapters || [];
             } catch {
               // Chapters fetch failed silently
@@ -127,7 +128,7 @@ export function useHomePagePresenter(
     };
   }, [hydrated, initialComics]);
 
-  const getComicCover = useCallback((comic: any): string => {
+  const getComicCover = useCallback((comic: { coverUrl?: string; cover_url?: string }): string => {
     const raw = comic.coverUrl || comic.cover_url || "";
     if (!raw) return "https://placehold.co/400x600/png?text=No+Cover";
     return proxiedR2ImageUrl(raw);

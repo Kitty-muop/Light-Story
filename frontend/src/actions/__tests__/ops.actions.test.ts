@@ -36,7 +36,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -65,7 +65,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -79,7 +79,7 @@ describe('ops.actions server actions', () => {
     });
 
     it('returns error when input validation fails', async () => {
-      const res = await setMaintenanceMode({ enabled: 'invalid' as any });
+      const res = await setMaintenanceMode({ enabled: 'invalid' as unknown as boolean });
 
       expect(res.success).toBe(false);
       expect(res.error).toContain('Invalid input');
@@ -97,7 +97,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ message: 'Forbidden' }), { status: 403 })
@@ -124,7 +124,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -152,7 +152,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -179,7 +179,7 @@ describe('ops.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })

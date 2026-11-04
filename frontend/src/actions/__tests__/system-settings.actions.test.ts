@@ -54,7 +54,7 @@ describe('system-settings.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -81,7 +81,7 @@ describe('system-settings.actions server actions', () => {
     it('returns error when input validation fails (invalid field type)', async () => {
       const invalidPayload = {
         ...validPayload,
-        compactMode: 'not-a-boolean' as any,
+        compactMode: 'not-a-boolean' as unknown as boolean,
       };
 
       const res = await saveSystemSettings(invalidPayload);
@@ -102,7 +102,7 @@ describe('system-settings.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ error: 'Permission denied' }), { status: 403 })
@@ -126,7 +126,7 @@ describe('system-settings.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const res = await saveSystemSettings(validPayload);
 
@@ -148,7 +148,7 @@ describe('system-settings.actions server actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })

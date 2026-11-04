@@ -32,7 +32,7 @@ describe('reading-history.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -77,7 +77,7 @@ describe('reading-history.actions server actions', () => {
             data: { session: null },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ message: 'Unauthorized' }), { status: 401 })
@@ -104,7 +104,7 @@ describe('reading-history.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -128,7 +128,7 @@ describe('reading-history.actions server actions', () => {
             data: { session: { access_token: 'valid-token' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ error: 'Failed to clear history' }), { status: 500 })

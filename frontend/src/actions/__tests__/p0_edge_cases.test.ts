@@ -166,7 +166,7 @@ describe('Phase P0 Edge Cases - http.ts (messageFromResponse & fetchApi)', () =>
             data: { session: { access_token: 'test-token-123' } },
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       await fetchApi('/test-endpoint', {
         method: 'POST',
@@ -186,7 +186,7 @@ describe('Phase P0 Edge Cases - http.ts (messageFromResponse & fetchApi)', () =>
         auth: {
           getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const formData = new FormData();
       formData.append('file', 'test');

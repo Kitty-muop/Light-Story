@@ -17,6 +17,7 @@ backend-supabase/supabase/.temp/
 .grapuco/
 .agent/
 agent/
+agent_plugin.json
 *.agents/
 *.agent.md
 *.agent.original.md
@@ -162,3 +163,6 @@ cocoindex.db
 tasks/
 
 .worktrees/
+
+# Sentry native artifacts
+.sentry-native/

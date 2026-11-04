@@ -37,7 +37,7 @@ describe('admin-users.actions server actions', () => {
           error: null,
         }),
       },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
   });
 
   afterEach(() => {

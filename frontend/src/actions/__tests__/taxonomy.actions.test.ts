@@ -25,7 +25,7 @@ vi.mock('../http', () => ({
   fetchApi: vi.fn(),
   messageFromResponse: vi.fn(async (res: Response) => {
     try {
-      const data: any = await res.json();
+      const data = (await res.json()) as { error?: string };
       return data.error || 'Server error';
     } catch {
       return res.statusText || 'Server error';
@@ -47,13 +47,13 @@ describe('taxonomy.actions', () => {
           error: null,
         }),
       },
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
   });
 
   describe('Category Actions', () => {
     it('createCategory calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await createCategory({ name: 'Sci-Fi', description: 'Science Fiction' });
       expect(res.success).toBe(true);
@@ -70,7 +70,7 @@ describe('taxonomy.actions', () => {
 
     it('updateCategory calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateCategory({ id: 'cat-1', name: 'Science Fiction', description: 'Updated' });
       expect(res.success).toBe(true);
@@ -88,7 +88,7 @@ describe('taxonomy.actions', () => {
 
     it('deleteCategory calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await deleteCategory({ id: 'cat-1' });
       expect(res.success).toBe(true);
@@ -107,7 +107,7 @@ describe('taxonomy.actions', () => {
   describe('Author Actions', () => {
     it('createAuthor calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await createAuthor({ name: 'John Doe', bio: 'Author bio' });
       expect(res.success).toBe(true);
@@ -124,7 +124,7 @@ describe('taxonomy.actions', () => {
 
     it('updateAuthor calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateAuthor({ id: 'auth-1', name: 'Jane Doe', bio: 'Updated bio' });
       expect(res.success).toBe(true);
@@ -142,7 +142,7 @@ describe('taxonomy.actions', () => {
 
     it('deleteAuthor calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await deleteAuthor({ id: 'auth-1' });
       expect(res.success).toBe(true);
@@ -161,7 +161,7 @@ describe('taxonomy.actions', () => {
   describe('Genre Actions', () => {
     it('createGenre calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await createGenre({ name: 'Fantasy', description: 'High fantasy' });
       expect(res.success).toBe(true);
@@ -178,7 +178,7 @@ describe('taxonomy.actions', () => {
 
     it('updateGenre calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateGenre({ id: 'gen-1', name: 'Dark Fantasy', description: 'Grim fantasy' });
       expect(res.success).toBe(true);
@@ -196,7 +196,7 @@ describe('taxonomy.actions', () => {
 
     it('deleteGenre calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await deleteGenre({ id: 'gen-1' });
       expect(res.success).toBe(true);
@@ -215,7 +215,7 @@ describe('taxonomy.actions', () => {
   describe('Tag Actions', () => {
     it('createTag calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await createTag({ name: 'Isekai', description: 'Reincarnation stories' });
       expect(res.success).toBe(true);
@@ -232,7 +232,7 @@ describe('taxonomy.actions', () => {
 
     it('updateTag calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await updateTag({ id: 'tag-1', name: 'OP MC', description: 'Overpowered main character' });
       expect(res.success).toBe(true);
@@ -250,7 +250,7 @@ describe('taxonomy.actions', () => {
 
     it('deleteTag calls fetchApi and revalidates tag', async () => {
       const mockRes = new Response(JSON.stringify({ success: true }), { status: 200 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await deleteTag({ id: 'tag-1' });
       expect(res.success).toBe(true);
@@ -275,7 +275,7 @@ describe('taxonomy.actions', () => {
             error: null,
           }),
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof serverApi.createClient>>);
 
       const res = await createCategory({ name: 'Sci-Fi' });
       expect(res.success).toBe(false);
@@ -292,7 +292,7 @@ describe('taxonomy.actions', () => {
 
     it('handles backend error response', async () => {
       const mockRes = new Response(JSON.stringify({ error: 'Duplicate entry' }), { status: 400 });
-      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes as any);
+      vi.mocked(httpModule.fetchApi).mockResolvedValue(mockRes);
 
       const res = await createCategory({ name: 'Duplicate' });
       expect(res.success).toBe(false);
